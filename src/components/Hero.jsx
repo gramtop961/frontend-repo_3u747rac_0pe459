@@ -89,9 +89,9 @@ function HackerTerminal() {
 
 export default function Hero() {
   return (
-    <section className="relative min-h-[92vh] w-full overflow-hidden bg-[#04050a]">
+    <section className="relative min-h-screen w-full overflow-hidden bg-[#04050a]">
       <div className="absolute inset-0">
-        <Spline scene="https://prod.spline.design/EF7JOSsHLk16Tlw9/scene.splinecode" style={{ width: '100%', height: '100%' }} />
+        <Spline scene="https://prod.spline.design/LU2mWMPbF3Qi1Qxh/scene.splinecode" style={{ width: '100%', height: '100%' }} />
       </div>
 
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#04050a] via-transparent to-[#04050a]/40" />
