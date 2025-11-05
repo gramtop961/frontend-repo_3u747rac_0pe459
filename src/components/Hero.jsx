@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import Spline from '@splinetool/react-spline'
 import { Github, Shield, Rocket, TerminalSquare } from 'lucide-react'
 
@@ -21,7 +21,7 @@ function HackerTerminal() {
   ]
 
   return (
-    <div className="w-full lg:w-[34rem] xl:w-[38rem] 2xl:w-[42rem] bg-black/65 backdrop-blur-md border border-emerald-500/20 rounded-xl overflow-hidden shadow-[0_0_30px_-5px_rgba(16,185,129,0.35)]">
+    <div className="w-full lg:w-[34rem] xl:w-[38rem] 2xl:w-[42rem] bg-black/65 backdrop-blur-md border border-emerald-500/20 rounded-xl overflow-hidden shadow-[0_0_30px_-5px_rgba(16,185,129,0.35)] pointer-events-none">
       <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500/10 via-emerald-400/10 to-cyan-400/10 border-b border-emerald-500/20">
         <div className="flex gap-2">
           <span className="h-3 w-3 rounded-full bg-rose-500" />
@@ -40,57 +40,19 @@ function HackerTerminal() {
   )
 }
 
-function TiltCard() {
-  const ref = useRef(null)
-
-  const handleMove = (e) => {
-    const el = ref.current
-    if (!el) return
-    const rect = el.getBoundingClientRect()
-    const px = (e.clientX - rect.left) / rect.width // 0..1
-    const py = (e.clientY - rect.top) / rect.height // 0..1
-    const rotateY = (px - 0.5) * 18 // deg
-    const rotateX = -(py - 0.5) * 18 // deg
-    el.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.04,1.04,1.04)`
-  }
-  const handleLeave = () => {
-    const el = ref.current
-    if (!el) return
-    el.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)'
-  }
-
-  return (
-    <div
-      onMouseMove={handleMove}
-      onMouseLeave={handleLeave}
-      className="relative"
-    >
-      <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-emerald-500/30 via-cyan-400/20 to-transparent blur-xl" />
-      <div
-        ref={ref}
-        className="relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 transition-transform duration-150 will-change-transform shadow-[0_15px_40px_-10px_rgba(16,185,129,0.35)]"
-        style={{ transform: 'perspective(900px) rotateX(0) rotateY(0) scale3d(1,1,1)' }}
-      >
-        <div className="flex items-center gap-4">
-          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-emerald-400/30 to-cyan-400/30 border border-emerald-400/40 flex items-center justify-center text-emerald-200">
-            <Shield className="h-6 w-6" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold">Glass Postcard</h3>
-            <p className="text-emerald-100/80 text-sm">Interactive, modern, vibrant — moves with your cursor.</p>
-          </div>
-        </div>
-        <div className="mt-4 text-sm text-emerald-100/80">
-          Secure-by-design full‑stack experiences with a focus on performance and aesthetics. Hover to tilt.
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default function Hero() {
+  const wheelTimeout = useRef(null)
+  const [isZooming, setIsZooming] = useState(false)
+
+  const handleWheel = () => {
+    // Treat wheel activity as zooming/interaction with the 3D scene
+    setIsZooming(true)
+    if (wheelTimeout.current) clearTimeout(wheelTimeout.current)
+    wheelTimeout.current = setTimeout(() => setIsZooming(false), 600)
+  }
+
   return (
-    <section className="relative min-h-[100svh] w-full overflow-hidden bg-black">
+    <section className="relative min-h-[100svh] w-full overflow-hidden bg-black" onWheel={handleWheel}>
       {/* Spline 3D cover background */}
       <div className="absolute inset-0">
         <Spline scene="https://prod.spline.design/ESO6PnMadasO0hU3/scene.splinecode" style={{ width: '100%', height: '100%' }} />
@@ -140,12 +102,10 @@ export default function Hero() {
 
           <div className="mt-6 lg:mt-0 space-y-6">
             {/* Glow frame behind terminal */}
-            <div className="relative">
-              <div className="absolute -inset-3 rounded-xl bg-gradient-to-r from-emerald-500/15 via-cyan-500/15 to-transparent blur-xl" />
+            <div className={`relative transition-opacity duration-500 ${isZooming ? 'opacity-0' : 'opacity-100'}`}>
+              <div className="absolute -inset-3 rounded-xl bg-gradient-to-r from-emerald-500/15 via-cyan-500/15 to-transparent blur-xl pointer-events-none" />
               <HackerTerminal />
             </div>
-            {/* Interactive glass card */}
-            <TiltCard />
           </div>
         </div>
       </div>
