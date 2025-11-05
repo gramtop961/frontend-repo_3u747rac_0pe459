@@ -89,12 +89,15 @@ function HackerTerminal() {
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-[#04050a]">
+    <section className="relative min-h-[100svh] w-full overflow-hidden bg-[#04050a]">
+      {/* 3D background cover */}
       <div className="absolute inset-0">
-        <Spline scene="https://prod.spline.design/LU2mWMPbF3Qi1Qxh/scene.splinecode" style={{ width: '100%', height: '100%' }} />
+        <Spline scene="https://prod.spline.design/hqXbe5uy0NxM7CDI/scene.splinecode" style={{ width: '100%', height: '100%' }} />
       </div>
 
+      {/* readability and parity overlays, never block interactions */}
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#04050a] via-transparent to-[#04050a]/40" />
+      <div className="absolute inset-0 pointer-events-none [background:radial-gradient(60%_60%_at_50%_40%,rgba(0,0,0,0.35)_0%,rgba(0,0,0,0.65)_100%)]" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 lg:py-28">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
