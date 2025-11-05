@@ -1,72 +1,27 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useRef } from 'react'
+import Spline from '@splinetool/react-spline'
 import { Github, Shield, Rocket, TerminalSquare } from 'lucide-react'
 
 function HackerTerminal() {
-  const script = useMemo(
-    () => [
-      'monish@neon-core:~$ whoami',
-      'monish',
-      'monish@neon-core:~$ uname -a',
-      'Linux cyber-grid 6.2.0 #1 SMP x86_64 GNU/Linux',
-      'monish@neon-core:~$ nmap -sC -sV target',
-      'PORT   STATE SERVICE VERSION',
-      '80/tcp open  http    nginx 1.23',
-      '443/tcp open  https   openresty',
-      'monish@neon-core:~$ node secure_api.js --harden',
-      '[+] WAF rules updated | CSP enforced | Rate limit active',
-      'monish@neon-core:~$ ./deploy --stack full --enable-ids',
-      '🚀 Deployed: web · api · db · ids | status: GREEN',
-      'monish@neon-core:~$ echo "Future secured."',
-      'Future secured.',
-    ],
-    []
-  )
-
-  const [display, setDisplay] = useState('')
-  const [lineIdx, setLineIdx] = useState(0)
-  const [charIdx, setCharIdx] = useState(0)
-
-  useEffect(() => {
-    if (lineIdx >= script.length) return
-
-    const line = script[lineIdx]
-    const isCommand = line.startsWith('monish@') || line.startsWith('🚀') || line.startsWith('[+]')
-
-    const timeout = setTimeout(() => {
-      setDisplay((prev) => {
-        const lines = prev.split('\n')
-        if (charIdx === 0) {
-          const prefix = isCommand ? '\\u001b[38;2;100;255;218m' : '\\u001b[38;2;180;200;255m'
-          const newLine = `${prefix}${line.slice(0, 1)}\\u001b[0m`
-          return lines.length ? `${prev}\n${newLine}` : newLine
-        }
-        const prefix = isCommand ? '\\u001b[38;2;100;255;218m' : '\\u001b[38;2;180;200;255m'
-        const nextLine = `${prefix}${line.slice(0, charIdx + 1)}\\u001b[0m`
-        return `${lines.slice(0, -1).join('\n')}${lines.length > 1 ? '\n' : ''}${nextLine}`
-      })
-
-      if (charIdx + 1 >= line.length) {
-        setLineIdx((i) => i + 1)
-        setCharIdx(0)
-      } else {
-        setCharIdx((c) => c + 1)
-      }
-    }, Math.max(15, 35 - Math.min(20, line.length / 2)))
-
-    return () => clearTimeout(timeout)
-  }, [charIdx, lineIdx, script])
-
-  useEffect(() => {
-    if (lineIdx < script.length && charIdx === 0 && display) {
-      const pause = setTimeout(() => {
-        setCharIdx(0.0001)
-      }, 160)
-      return () => clearTimeout(pause)
-    }
-  }, [lineIdx, charIdx, display, script.length])
+  const lines = [
+    'monish@neon-core:~$ whoami',
+    'monish',
+    'monish@neon-core:~$ uname -a',
+    'Linux cyber-grid 6.2.0 #1 SMP x86_64 GNU/Linux',
+    'monish@neon-core:~$ nmap -sC -sV target',
+    'PORT   STATE SERVICE VERSION',
+    '80/tcp open  http    nginx 1.23',
+    '443/tcp open  https   openresty',
+    'monish@neon-core:~$ node secure_api.js --harden',
+    '[+] WAF rules updated | CSP enforced | Rate limit active',
+    'monish@neon-core:~$ ./deploy --stack full --enable-ids',
+    '🚀 Deployed: web · api · db · ids | status: GREEN',
+    'monish@neon-core:~$ echo "Future secured."',
+    'Future secured.',
+  ]
 
   return (
-    <div className="w-full lg:w-[32rem] xl:w-[36rem] 2xl:w-[42rem] bg-black/70 backdrop-blur-md border border-emerald-500/20 rounded-xl overflow-hidden shadow-[0_0_30px_-5px_rgba(16,185,129,0.35)]">
+    <div className="w-full lg:w-[34rem] xl:w-[38rem] 2xl:w-[42rem] bg-black/65 backdrop-blur-md border border-emerald-500/20 rounded-xl overflow-hidden shadow-[0_0_30px_-5px_rgba(16,185,129,0.35)]">
       <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500/10 via-emerald-400/10 to-cyan-400/10 border-b border-emerald-500/20">
         <div className="flex gap-2">
           <span className="h-3 w-3 rounded-full bg-rose-500" />
@@ -79,35 +34,71 @@ function HackerTerminal() {
         </div>
       </div>
       <pre className="m-0 p-4 font-mono text-[12px] leading-5 text-emerald-100 whitespace-pre-wrap min-h-[18rem] max-h-[24rem] overflow-y-auto [text-shadow:0_0_8px_rgba(16,185,129,0.35)]">
-        {display}
+        {lines.join('\n')}
       </pre>
+    </div>
+  )
+}
+
+function TiltCard() {
+  const ref = useRef(null)
+
+  const handleMove = (e) => {
+    const el = ref.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
+    const px = (e.clientX - rect.left) / rect.width // 0..1
+    const py = (e.clientY - rect.top) / rect.height // 0..1
+    const rotateY = (px - 0.5) * 18 // deg
+    const rotateX = -(py - 0.5) * 18 // deg
+    el.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.04,1.04,1.04)`
+  }
+  const handleLeave = () => {
+    const el = ref.current
+    if (!el) return
+    el.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)'
+  }
+
+  return (
+    <div
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
+      className="relative"
+    >
+      <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-emerald-500/30 via-cyan-400/20 to-transparent blur-xl" />
+      <div
+        ref={ref}
+        className="relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 transition-transform duration-150 will-change-transform shadow-[0_15px_40px_-10px_rgba(16,185,129,0.35)]"
+        style={{ transform: 'perspective(900px) rotateX(0) rotateY(0) scale3d(1,1,1)' }}
+      >
+        <div className="flex items-center gap-4">
+          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-emerald-400/30 to-cyan-400/30 border border-emerald-400/40 flex items-center justify-center text-emerald-200">
+            <Shield className="h-6 w-6" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold">Glass Postcard</h3>
+            <p className="text-emerald-100/80 text-sm">Interactive, modern, vibrant — moves with your cursor.</p>
+          </div>
+        </div>
+        <div className="mt-4 text-sm text-emerald-100/80">
+          Secure-by-design full‑stack experiences with a focus on performance and aesthetics. Hover to tilt.
+        </div>
+      </div>
     </div>
   )
 }
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen md:min-h-[100dvh] w-full overflow-hidden bg-[#0a0b10]">
-      {/* Layer 1: Base radial gradient */}
+    <section className="relative min-h-[100svh] w-full overflow-hidden bg-black">
+      {/* Spline 3D cover background */}
       <div className="absolute inset-0">
-        <div className="h-full w-full bg-[radial-gradient(75%_60%_at_50%_40%,rgba(12,14,30,1)_0%,rgba(6,7,15,1)_40%,rgba(5,6,12,1)_100%)]" />
+        <Spline scene="https://prod.spline.design/ESO6PnMadasO0hU3/scene.splinecode" style={{ width: '100%', height: '100%' }} />
       </div>
 
-      {/* Layer 2: Faux 3D grid with perspective (pure CSS, no WebGL) */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-[-20%] h-[60%]" style={{ transform: 'perspective(900px) rotateX(60deg)' }}>
-        <div
-          className="h-full w-[200%] -ml-[50%] opacity-30"
-          style={{
-            backgroundImage:
-              'repeating-linear-gradient(0deg, rgba(16,185,129,0.18) 0px, rgba(16,185,129,0.18) 1px, transparent 1px, transparent 30px), repeating-linear-gradient(90deg, rgba(16,185,129,0.18) 0px, rgba(16,185,129,0.18) 1px, transparent 1px, transparent 30px)'
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0b10] via-transparent to-transparent" />
-      </div>
-
-      {/* Layer 3: Soft neon orbs */}
-      <div className="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-emerald-500/20 blur-3xl" />
-      <div className="pointer-events-none absolute -top-10 right-[-4rem] h-72 w-72 rounded-full bg-cyan-500/20 blur-3xl" />
+      {/* Readability overlays (must not block interaction) */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_40%_at_50%_10%,rgba(16,185,129,0.25),transparent)]" />
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 md:py-24 lg:py-28">
@@ -138,8 +129,6 @@ export default function Hero() {
                 <Rocket className="h-5 w-5" /> View Projects
               </a>
             </div>
-
-            {/* Subtle badges to enhance high‑tech feel */}
             <div className="mt-6 flex flex-wrap gap-2">
               {['Zero‑Trust', 'OWASP‑Aware', 'Type‑Safe APIs', 'CI/CD Ready'].map((tag) => (
                 <span key={tag} className="text-xs px-2 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-200">
@@ -149,12 +138,14 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="mt-6 lg:mt-0">
+          <div className="mt-6 lg:mt-0 space-y-6">
+            {/* Glow frame behind terminal */}
             <div className="relative">
-              {/* Glow frame behind terminal to fake depth */}
-              <div className="absolute -inset-3 rounded-xl bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-transparent blur-xl" />
+              <div className="absolute -inset-3 rounded-xl bg-gradient-to-r from-emerald-500/15 via-cyan-500/15 to-transparent blur-xl" />
               <HackerTerminal />
             </div>
+            {/* Interactive glass card */}
+            <TiltCard />
           </div>
         </div>
       </div>
