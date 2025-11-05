@@ -36,7 +36,6 @@ function HackerTerminal() {
     const timeout = setTimeout(() => {
       setDisplay((prev) => {
         const lines = prev.split('\n')
-        const lastLine = lines[lines.length - 1] || ''
         if (charIdx === 0) {
           const prefix = isCommand ? '\\u001b[38;2;100;255;218m' : '\\u001b[38;2;180;200;255m'
           const newLine = `${prefix}${line.slice(0, 1)}\\u001b[0m`
@@ -61,7 +60,7 @@ function HackerTerminal() {
   useEffect(() => {
     if (lineIdx < script.length && charIdx === 0 && display) {
       const pause = setTimeout(() => {
-        setCharIdx(0.0001) // kick next tick
+        setCharIdx(0.0001)
       }, 160)
       return () => clearTimeout(pause)
     }
@@ -89,17 +88,15 @@ function HackerTerminal() {
 
 export default function Hero() {
   return (
-    <section className="relative min-h-[100svh] w-full overflow-hidden bg-[#04050a]">
-      {/* 3D background cover */}
+    <section className="relative min-h-screen md:min-h-[100dvh] w-full overflow-hidden bg-[#0a0b10]">
       <div className="absolute inset-0">
-        <Spline scene="https://prod.spline.design/hqXbe5uy0NxM7CDI/scene.splinecode" style={{ width: '100%', height: '100%' }} />
+        <div className="h-full w-full bg-[radial-gradient(75%_60%_at_50%_40%,rgba(12,14,30,1)_0%,rgba(6,7,15,1)_40%,rgba(5,6,12,1)_100%)]" />
+        <Spline scene="https://prod.spline.design/WCoEDSwacOpKBjaC/scene.splinecode" style={{ width: '100%', height: '100%' }} />
       </div>
 
-      {/* readability and parity overlays, never block interactions */}
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#04050a] via-transparent to-[#04050a]/40" />
-      <div className="absolute inset-0 pointer-events-none [background:radial-gradient(60%_60%_at_50%_40%,rgba(0,0,0,0.35)_0%,rgba(0,0,0,0.65)_100%)]" />
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-black/30 via-transparent to-black/50" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 lg:py-28">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 md:py-24 lg:py-28">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-emerald-300 text-sm mb-4">
