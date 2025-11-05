@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react'
-import Spline from '@splinetool/react-spline'
 import { Github, Shield, Rocket, TerminalSquare } from 'lucide-react'
 
 function HackerTerminal() {
@@ -89,13 +88,28 @@ function HackerTerminal() {
 export default function Hero() {
   return (
     <section className="relative min-h-screen md:min-h-[100dvh] w-full overflow-hidden bg-[#0a0b10]">
+      {/* Layer 1: Base radial gradient */}
       <div className="absolute inset-0">
         <div className="h-full w-full bg-[radial-gradient(75%_60%_at_50%_40%,rgba(12,14,30,1)_0%,rgba(6,7,15,1)_40%,rgba(5,6,12,1)_100%)]" />
-        <Spline scene="https://prod.spline.design/WCoEDSwacOpKBjaC/scene.splinecode" style={{ width: '100%', height: '100%' }} />
       </div>
 
-      <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-black/30 via-transparent to-black/50" />
+      {/* Layer 2: Faux 3D grid with perspective (pure CSS, no WebGL) */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-[-20%] h-[60%]" style={{ transform: 'perspective(900px) rotateX(60deg)' }}>
+        <div
+          className="h-full w-[200%] -ml-[50%] opacity-30"
+          style={{
+            backgroundImage:
+              'repeating-linear-gradient(0deg, rgba(16,185,129,0.18) 0px, rgba(16,185,129,0.18) 1px, transparent 1px, transparent 30px), repeating-linear-gradient(90deg, rgba(16,185,129,0.18) 0px, rgba(16,185,129,0.18) 1px, transparent 1px, transparent 30px)'
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0b10] via-transparent to-transparent" />
+      </div>
 
+      {/* Layer 3: Soft neon orbs */}
+      <div className="pointer-events-none absolute -top-24 -left-24 h-72 w-72 rounded-full bg-emerald-500/20 blur-3xl" />
+      <div className="pointer-events-none absolute -top-10 right-[-4rem] h-72 w-72 rounded-full bg-cyan-500/20 blur-3xl" />
+
+      {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 md:py-24 lg:py-28">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div>
@@ -124,10 +138,23 @@ export default function Hero() {
                 <Rocket className="h-5 w-5" /> View Projects
               </a>
             </div>
+
+            {/* Subtle badges to enhance high‑tech feel */}
+            <div className="mt-6 flex flex-wrap gap-2">
+              {['Zero‑Trust', 'OWASP‑Aware', 'Type‑Safe APIs', 'CI/CD Ready'].map((tag) => (
+                <span key={tag} className="text-xs px-2 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-200">
+                  {tag}
+                </span>
+              ))}
+            </div>
           </div>
 
           <div className="mt-6 lg:mt-0">
-            <HackerTerminal />
+            <div className="relative">
+              {/* Glow frame behind terminal to fake depth */}
+              <div className="absolute -inset-3 rounded-xl bg-gradient-to-r from-emerald-500/10 via-cyan-500/10 to-transparent blur-xl" />
+              <HackerTerminal />
+            </div>
           </div>
         </div>
       </div>
